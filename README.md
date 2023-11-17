@@ -1,6 +1,6 @@
 HowToBuild and setup
 
-Clone this repo: git clone https://gitea.pi-farm.duckdns.org/meik/pxe-server.git
+Clone this repo: "git clone https://github.com/pi-farm/Docker-PXE-Server.git"
 and cd into it: "cd pxe-server"
 
 run: "bash start.sh"
