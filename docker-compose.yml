@@ -1,0 +1,32 @@
+version: '3.7'
+services:
+    pxe-container-s6:
+        build: .
+        stdin_open: true
+        tty: true
+        privileged: true
+        network_mode: host
+        volumes:
+            - ${PWD}/samba:/etc/samba
+            - ${PWD}/RPi-PXE-Server:/app/RPi-PXE-Server
+            - ${PWD}/srv:/srv
+            - ${PWD}/media:/media/
+            - /boot:/boot
+        container_name: pxe-container
+        image: pxe-image:s6-test01
+    
+    pxe-samba:
+        image: gists/samba-server
+        container_name: samba-server
+        ports:
+            - "0.0.0.0:137:137/udp"
+            - "0.0.0.0:138:138/udp"
+            - "0.0.0.0:139:139/tcp"
+            - "0.0.0.0:445:445/tcp"
+        volumes:
+            - ${PWD}/samba:/etc/samba
+            - ${PWD}/srv:/srv
+            - ${PWD}/media:/media/
+#        restart: unless-stoped
+        depends_on:
+            - pxe-container-s6
