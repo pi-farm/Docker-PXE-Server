@@ -1,7 +1,7 @@
 FROM ubuntu:latest
 
-RUN apt update && apt upgrade -y && apt autoremove -y
-RUN apt install util-linux nano xz-utils wget systemctl sudo git -y
+RUN apt-get update && apt upgrade -y && apt-get autoremove -y
+RUN apt-get install util-linux nano xz-utils wget systemctl sudo git -y
 
 ADD https://github.com/just-containers/s6-overlay/releases/download/v3.1.6.0/s6-overlay-noarch.tar.xz /tmp
 RUN tar -C / -Jxpf /tmp/s6-overlay-noarch.tar.xz
@@ -24,16 +24,8 @@ VOLUME /srv
 VOLUME /etc/samba
 VOLUME /boot
 
+RUN rm -rf /temp/*
 WORKDIR /app/RPi-PXE-Server
 
 ENTRYPOINT [ "/init" ]
 
-## docker build -t pxe-image:test01 .
-## docker run -it -d --privileged --net=host --volume ${PWD}/RPi-PXE-Server:/app/RPi-PXE-Server --volume ${PWD}/srv:/srv --name pxe-container pxe-image:test01
-## docker exec -it pxe-container bash
-## systemctl start chrony dnsmasq lighttpd nfs-mountd nfs-server nfs-kernel-server nmbd rsync samba-ad-dc smbd udev && systemctl stop rpcbind
-
-## /etc/init.d/dnsmasq start
-## /etc/init.d/chrony start
-## /etc/init.d/lighttpd start
-## /etc/init.d/nfs-kernel-server start
