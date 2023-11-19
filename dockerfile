@@ -13,18 +13,13 @@ RUN mkdir /app/RPi-PXE-Server
 
 COPY root/ /
 
-#WORKDIR /app
-#RUN git clone https://github.com/beta-tester/RPi-PXE-Server.git
-
-#VOLUME /app/RPi-PXE-Server
-#COPY scripts/ /app/RPi-PXE-Server/
-
 VOLUME /app/RPi-PXE-Server
 VOLUME /srv
 VOLUME /etc/samba
 VOLUME /boot
 
 RUN rm -rf /temp/*
+
 WORKDIR /app/RPi-PXE-Server
 
 ENTRYPOINT [ "/init" ]

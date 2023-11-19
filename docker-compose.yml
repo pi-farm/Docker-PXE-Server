@@ -1,6 +1,6 @@
 version: '3.7'
 services:
-    pxe-container-s6:
+    pxe-container:
         build: .
         stdin_open: true
         tty: true
@@ -13,7 +13,7 @@ services:
             - ${PWD}/media:/media/
             - /boot:/boot
         container_name: pxe-container
-        image: pxe-image:s6-test01
+        image: pxe-image
     
     pxe-samba:
         image: gists/samba-server
@@ -27,6 +27,6 @@ services:
             - ${PWD}/samba:/etc/samba
             - ${PWD}/srv:/srv
             - ${PWD}/media:/media/
-#        restart: unless-stoped
+        restart: unless-stopped
         depends_on:
-            - pxe-container-s6
+            - pxe-container

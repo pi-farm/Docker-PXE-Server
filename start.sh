@@ -80,7 +80,7 @@ menue()
 
 		D)	clear
 			docker-compose down
-			docker rmi  pxe-image:s6-test01
+			docker rmi  pxe-image:latest
 			echo "PXE-Server container and image deleted"
 			echo ""
 			clear 
