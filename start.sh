@@ -14,6 +14,8 @@ menue()
 	echo "x)  	Stop the docker-containers"
 	echo "u)	Update the PXE-Server"
 	echo ""
+	echo "t)	Show TCPDUMP on port 67-69 of the PXE-Container"
+	echo ""
 	echo "D)  	DELETE the existing docker-containers and docker images completely" 
 	echo ""
 	echo "EXIT 	Exit this script, but PXE-Server is running, if started"
@@ -74,6 +76,15 @@ menue()
 			clear
 			echo "PXE-Server stopped"
 			echo ""
+			menue
+			;;
+			#############################################
+
+		t)	clear
+			docker exec -it pxe-container bash tcpdump.sh
+			clear
+			echo "TCPDUMP stopped"
+			echo""
 			menue
 			;;
 			#############################################
