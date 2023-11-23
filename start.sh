@@ -24,7 +24,10 @@ menue()
 	echo "|                                                                                         |"
 	echo "|  r)     Start the existing docker-containers                                            |"
 	echo "|  x)     Stop the docker-containers                                                      |"
+	echo "|                                                                                         |"
+	echo "|  e)     Edit 'p2-include-handle'-file                                                   |"
 	echo "|  u)     Update the PXE-Server                                                           |"
+	echo "|  f)     Fix permissions for samba-share                                                 |"
 	echo "|                                                                                         |"
 	echo "|  t)     Show TCPDUMP on port 67-69 of the PXE-Container                                 |"
 	echo "|                                                                                         |"
@@ -79,10 +82,28 @@ menue()
 			;;
 			#############################################
 
+		e)	clear
+			nano RPi-PXE-Server/p2-include-handle
+			clear
+			echo "Please update if you have changed the anything"
+			echo ""
+			menue
+			;;
+			#############################################
+
 		u)	clear
 			docker exec -it pxe-container bash update.sh
 			clear
 			echo "PXE-Server update finished"
+			echo ""
+			menue
+			;;
+			#############################################
+
+		f)	clear
+			sudo chmod -R 0755 media/
+			clear
+			echo "Permissions for Samba-Share fixed"
 			echo ""
 			menue
 			;;
