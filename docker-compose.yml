@@ -15,18 +15,18 @@ services:
         container_name: pxe-container
         image: pxe-image
     
-    pxe-samba:
-        image: gists/samba-server
-        container_name: samba-server
-        ports:
-            - "0.0.0.0:137:137/udp"
-            - "0.0.0.0:138:138/udp"
-            - "0.0.0.0:139:139/tcp"
-            - "0.0.0.0:445:445/tcp"
-        volumes:
-            - ${PWD}/samba:/etc/samba
-            - ${PWD}/srv:/srv
-            - ${PWD}/media:/media/
-        restart: unless-stopped
-        depends_on:
-            - pxe-container
+#    pxe-samba:
+#        image: gists/samba-server
+#        container_name: samba-server
+#        ports:
+#            - "0.0.0.0:137:137/udp"
+#            - "0.0.0.0:138:138/udp"
+#            - "0.0.0.0:139:139/tcp"
+#            - "0.0.0.0:445:445/tcp"
+#        volumes:
+#            - ${PWD}/samba:/etc/samba
+#            - ${PWD}/srv:/srv
+#            - ${PWD}/media:/media/
+#        restart: unless-stopped
+#        depends_on:
+#            - pxe-container

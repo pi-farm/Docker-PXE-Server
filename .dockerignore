@@ -1,5 +1,6 @@
 .git
 .gitignore
 srv
+media
 RPi-PXE-Server
 

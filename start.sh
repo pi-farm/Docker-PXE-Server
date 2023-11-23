@@ -45,6 +45,7 @@ menue()
 			mkdir samba srv
 			git clone https://github.com/beta-tester/RPi-PXE-Server.git
 			cp scripts/* RPi-PXE-Server
+			docker-compose build --no-cache
 			docker-compose up -d
 			docker exec -it pxe-container bash first_run.sh
 			clear 
@@ -101,6 +102,15 @@ menue()
 			clear
 			echo "TCPDUMP stopped"
 			echo""
+			menue
+			;;
+			#############################################
+
+		p)	clear
+			docker exec -it pxe-container bash tails-patch.sh
+			clear
+			echo "Patch for Tails installed"
+			echo ""
 			menue
 			;;
 			#############################################
