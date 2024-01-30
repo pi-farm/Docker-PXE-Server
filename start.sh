@@ -48,8 +48,8 @@ menue()
 			mkdir samba srv
 			git clone https://github.com/beta-tester/RPi-PXE-Server.git
 			cp scripts/* RPi-PXE-Server
-			docker-compose build --no-cache
-			docker-compose up -d
+			docker compose build --no-cache
+			docker compose up -d
 			docker exec -it pxe-container bash first_run.sh
 			clear 
 			echo "Please reboot!"
@@ -59,11 +59,11 @@ menue()
 
 		s)
 			clear
-			docker-compose start
+			docker compose start
 			docker exec -it pxe-container bash setup.sh
-			docker-compose stop
+			docker compose stop
 			sudo systemctl restart rpcbind.service
-			docker-compose start
+			docker compose start
 			docker exec -it pxe-container bash update.sh
 			clear
 			echo "PXE-Server is running"
@@ -73,7 +73,7 @@ menue()
 			#############################################
 
 		r)	clear
-			docker-compose start
+			docker compose start
 			docker exec -it pxe-container bash update.sh
 			clear
 			echo "PXE-Server started"
@@ -110,7 +110,7 @@ menue()
 			#############################################
 
 		x)	clear
-			docker-compose stop
+			docker compose stop
 			clear
 			echo "PXE-Server stopped"
 			echo ""
@@ -137,7 +137,7 @@ menue()
 			#############################################
 
 		D)	clear
-			docker-compose down
+			docker compose down
 			docker rmi  pxe-image:latest
 			echo "PXE-Server container and image deleted"
 			echo ""
