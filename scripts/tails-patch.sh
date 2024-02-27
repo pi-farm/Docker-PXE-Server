@@ -1,5 +1,6 @@
 #!/usr/bin/bash
 
+# ... break=premount
 # ... break=init
 # ... debug
 #
@@ -7,8 +8,10 @@
 # $ ls  /tmp/test/bin/live-*
 # $ ls -r /tmp/test/lib/live/*
 
+# 2024-02-27 for tails 6.0, renamed to all-net-blocklist.conf
+# 2024-02-27 for tails 6.0, updated path from /lib/modules/ to /usr/lib/modules/
 # 2023-09-11 skip network de-init on boot option "break=init" to keep network alive for debugging
-# 2021-11-07 /conf/net_drivers.tar.xz, /conf/conf.d/9999-hotfix-pxe, /etc/live/boot/9999-hotfix-pxe
+# 2021-11-07 /conf/net_drivers.tar.xz, /conf/conf.d/zzzz-hotfix-pxe, /etc/live/boot/zzzz-hotfix-pxe
 
 # requires:
 #   squashfs-tools  (unsquashfs)
@@ -27,25 +30,25 @@ DST=/srv/nfs/tails-x64-hotfix-pxe.cpio.xz
 
 if [[ -z "${TMP}" ]] || [[ -z "${SRC}" ]] || [[ -z "${DST}" ]]; then
     echo "ERROR: undefined variable"
-    exit -1
+    return -1
 fi
 
 if ! [[ -d "$(dirname ${TMP:?})" ]] && ! [[ -r "${SRC:?}" ]] && ! [[ -d "$(dirname ${DST:?})" ]]; then
     echo "ERROR: wrong file or folder"
-    exit -2
+    return -2
 fi
 
 
 # kernel version of tails
-KVER=$(basename $(unsquashfs -l "${SRC:?}" -e /lib/modules/ | grep /lib/modules/ | head -n 1))
-(( $? != 0 )) && exit -4
+KVER=$(basename $(unsquashfs -l "${SRC:?}" -e /usr/lib/modules/ | grep /usr/lib/modules/ | head -n 1))
+(( $? != 0 )) && return -4
 
 # test if kernel version is correct
 if [[ -n "${KVER}" ]]; then
     echo "INFO: KVER='${KVER:?}'"
 else
     echo "ERROR: unknown kernel version"
-    exit -3
+    return -3
 fi
 
 do_modules() {
@@ -53,59 +56,66 @@ do_modules() {
 sudo unsquashfs \
     -d "${TMP:?}" \
     -f "${SRC:?}" \
-    -e "/lib/modules/${KVER:?}/kernel/drivers/net/phy" \
-    -e "/lib/modules/${KVER:?}/kernel/drivers/net/ethernet" \
+    -e "/usr/lib/modules/${KVER:?}/kernel/drivers/net/phy" \
+    -e "/usr/lib/modules/${KVER:?}/kernel/drivers/net/ethernet" \
     ;
 (( $? != 0 )) && exit -4
 
 # compress missing network kernel drivers modules to file
 [[ -e "${TMP:?}/conf/" ]] || sudo mkdir -p "${TMP:?}/conf/"
-sudo tar -ravf "${TMP:?}/conf/net_drivers.tar.xz" -C "${TMP:?}"  "lib"
-sudo rm -rf "${TMP:?}/lib"
+sudo tar -ravf "${TMP:?}/conf/net_drivers.tar.xz" -C "${TMP:?}"  "usr/lib"
+sudo rm -rf "${TMP:?}/usr/lib"
 }
 
 
 do_patch_top() {
 # add hotfix for pxe boot to initrd image
 [[ -e "${TMP:?}/conf/conf.d/" ]] || sudo mkdir -p "${TMP:?}/conf/conf.d/"
-cat << EOF | sudo tee "${TMP:?}/conf/conf.d/9999-hotfix-pxe" &>/dev/null
+cat << EOF | sudo tee "${TMP:?}/conf/conf.d/zzzz-hotfix-pxe" &>/dev/null
 #!/usr/bin/sh
 
-# check if we dealing with same kernel version
-if [ "\$(uname -r)" != "${KVER:?}" ]; then
-    . /scripts/functions
-    log_failure_msg "wrong kernel version. '\$(uname -r)'!='${KVER:?}'"
-    panic "please visit: https://github.com/beta-tester/RPi-PXE-Server/issues/31"
-fi
+patch_top()
+{
+    # check if we dealing with same kernel version
+    if [ "\$(uname -r)" != "${KVER:?}" ]; then
+        . /scripts/functions
+        log_failure_msg "wrong kernel version. '\$(uname -r)'!='${KVER:?}'"
+        panic "please visit: https://github.com/beta-tester/RPi-PXE-Server/issues/31"
+    fi
 
-# comment out all blacklist entries
-sed "s/^install/# install/g" -i /etc/modprobe.d/all-net-blacklist.conf
+    # comment out all blacklist entries
+    sed "s/^install/# install/g" -i /etc/modprobe.d/all-net-blocklist.conf
 
-# replace wget script by busybox, for normal behavior
-mv /usr/bin/wget /usr/bin/wget.bak
-ln -sf /usr/bin/busybox /usr/bin/wget
+    # replace wget script by busybox, for normal behavior
+    mv /usr/bin/wget /usr/bin/wget.bak
+    ln -sf /usr/bin/busybox /usr/bin/wget
 
-# replace depmod, for normal behavior
-mv /usr/sbin/depmod /usr/sbin/depmod.bak
-ln -sf /usr/bin/kmod /usr/sbin/depmod
+    # replace depmod, for normal behavior
+    mv /usr/sbin/depmod /usr/sbin/depmod.bak
+    ln -sf /usr/bin/kmod /usr/sbin/depmod
 
-# excract the compressed drivers in place
-tar -xf "/conf/net_drivers.tar.xz" -C /usr/
+    # excract the compressed drivers in place
+    tar -xf "/conf/net_drivers.tar.xz" -C /
 
-# rebulid dependencies for added network kernel drivers modules
-depmod -b /usr
+    # rebulid dependencies for added network kernel drivers modules
+    depmod -b /usr
+
+    # enqueue hot fix for patch_bottom
+    echo '/scripts/init-bottom/zzzz-hotfix-pxe' | tee -a /scripts/init-bottom/ORDER
+}
+
+patch_top
 EOF
-(( $? != 0 )) && exit -4
-sudo chmod +x "${TMP:?}/conf/conf.d/9999-hotfix-pxe"
-(( $? != 0 )) && exit -4
+(( $? != 0 )) && return -4
+sudo chmod +x "${TMP:?}/conf/conf.d/zzzz-hotfix-pxe"
+(( $? != 0 )) && return -4
 }
 
 do_patch_bottom() {
-[[ -e "${TMP:?}/etc/live/boot/" ]] || sudo mkdir -p "${TMP:?}/etc/live/boot/"
-cat << EOF | sudo tee "${TMP:?}/etc/live/boot/9999-hotfix-pxe" &>/dev/null
+[[ -e "${TMP:?}/scripts/init-bottom/" ]] || sudo mkdir -p "${TMP:?}/scripts/init-bottom/"
+cat << EOF | sudo tee "${TMP:?}/scripts/init-bottom/zzzz-hotfix-pxe" &>/dev/null
 #!/usr/bin/sh
-
-local_bottom ()
+patch_bottom()
 {
     if ! [ -n "\$break" ]; then
         # hotfix-pxe for issue with network initialisation in tails
@@ -129,10 +139,12 @@ local_bottom ()
         done
     fi
 }
+
+patch_bottom
 EOF
-(( $? != 0 )) && exit -4
-sudo chmod +x "${TMP:?}/etc/live/boot/9999-hotfix-pxe"
-(( $? != 0 )) && exit -4
+(( $? != 0 )) && return -4
+sudo chmod +x "${TMP:?}/scripts/init-bottom/zzzz-hotfix-pxe"
+(( $? != 0 )) && return -4
 }
 
 
@@ -140,10 +152,10 @@ do_initrd() {
 # create an initrd image to overlay at boot time
 sudo rm "${DST:?}"
 cd "${TMP:?}"
-(( $? != 0 )) && exit -4
+(( $? != 0 )) && return -4
 find . -type f -print0 | cpio --null --create --verbose --format=newc \
     | xz --compress --extreme --check=crc32 | sudo tee "${DST:?}" &>/dev/null
-(( $? != 0 )) && exit -4
+(( $? != 0 )) && return -4
 cd -
 }
 
@@ -151,7 +163,7 @@ cd -
 do_cleanup() {
 # clean up temporary files
 sudo rm -rf "${TMP:?}"
-(( $? != 0 )) && exit -4
+(( $? != 0 )) && return -4
 }
 
 
