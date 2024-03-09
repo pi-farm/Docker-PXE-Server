@@ -13,7 +13,7 @@ run: "bash start.sh"
 5. restart your pc
 6. run "bash start.sh" again an choose (u) for update
 
-afer that, your pc is ready
+after that, your docker-container is ready
 
 
 to check, if the volumes are mounted, go into the running container:
