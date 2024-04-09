@@ -1,10 +1,34 @@
 #!/bin/bash
 
+# VARs
+h1=50 # tmux splitwindow percentage RIGHT WINDOW
+h2=75 # tmux splitwindow percentage RIGHT WINDOW
+v1=30 # tmux splitwindow percentage LOWER WINDOW
+
+#### INIT-Windowset
+
+# Open Speedometer
+tmux split-window -v -p $v1 "speedometer -b -r eth0 -t eth0"
+
+# Open TCPDUMP
+tmux select-pane -t 1
+tmux split-window -h -p $h2 "docker exec -it pxe-container bash tcpdump.sh"
+
+# Open-SideWindow
+tmux select-pane -t 0
+tmux split-window -h -p $h1 
+
+# Select MainWindow
+tmux select-pane -t 0
+
+############################################################
+
 ende()
 {
-	exit
+    exit
 }
-###################
+
+############################################################
 
 menue()
 {
@@ -18,6 +42,9 @@ menue()
 	echo "|                         PP            XX  XX         EE                                 |"
 	echo "|                         PP           XX    XX        EEEEEEE                            |"
 	echo "|_________________________________________________________________________________________|"
+	echo "|                                                                                         |"
+	echo "|  id)    Install Docker                                                                  |"
+	echo "|  ip)    Install other needed software (i.e. tcpdump, tmux...)                           |"
 	echo "|                                                                                         |"
 	echo "|  b)     Build the PXE-Image and startup the PXE-Container                               |"
 	echo "|  s)     Setup the PXE-Server                                                            |"
@@ -43,18 +70,21 @@ menue()
 	read -p "Your choice: " menue_wahl
 
 	case "$menue_wahl" in
+
 		b)
-			clear
-			mkdir samba srv
-			git clone https://github.com/beta-tester/RPi-PXE-Server.git
-			cp scripts/* RPi-PXE-Server
-			docker compose build --no-cache
-			docker compose up -d
-			docker exec -it pxe-container bash first_run.sh
-			clear 
-			echo "Please reboot!"
-			exit
+			tmux send-keys -t 1 C-z 'bash ui/build.sh' Enter
+			tmux select-pane -t 0
 			;;
+
+			#############################################
+
+		id)
+			tmux select-pane -t 1
+			tmux send-keys -t 1 C-z 'bash ui/install_docker.sh' Enter
+			clear
+			menue
+			;;
+
 			#############################################
 
 		s)
@@ -70,6 +100,7 @@ menue()
 			echo ""
 			menue
 			;;
+
 			#############################################
 
 		r)	clear
@@ -80,6 +111,7 @@ menue()
 			echo ""
 			menue
 			;;
+
 			#############################################
 
 		e)	clear
@@ -89,6 +121,7 @@ menue()
 			echo ""
 			menue
 			;;
+
 			#############################################
 
 		u)	clear
@@ -98,6 +131,7 @@ menue()
 			echo ""
 			menue
 			;;
+
 			#############################################
 
 		f)	clear
@@ -107,6 +141,7 @@ menue()
 			echo ""
 			menue
 			;;
+
 			#############################################
 
 		x)	clear
@@ -116,6 +151,7 @@ menue()
 			echo ""
 			menue
 			;;
+
 			#############################################
 
 		t)	clear
@@ -125,6 +161,7 @@ menue()
 			echo""
 			menue
 			;;
+
 			#############################################
 
 		p)	clear
@@ -134,6 +171,7 @@ menue()
 			echo ""
 			menue
 			;;
+
 			#############################################
 
 		D)	clear
@@ -144,12 +182,18 @@ menue()
 			clear 
 			menue
 			;;
+
 			#############################################
 
-		EXIT)	clear
-			echo "Bye bye..."
+		EXIT)
+			#tmux send-keys -t 2 C-z 'c' Enter	
+			tmux kill-pane -t 3
+			tmux kill-pane -t 2
+			tmux kill-pane -t 1
+			clear
 			ende
 			;;
+
 			#############################################
 
 		*)	echo ""
@@ -159,10 +203,10 @@ menue()
 			clear
 			menue
 			;;
+
 			#############################################
 
 	esac
-
 }
 
 clear
