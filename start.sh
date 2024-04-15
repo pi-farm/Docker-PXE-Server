@@ -96,7 +96,7 @@ menue()
 
 		u)	clear
 			docker exec -it pxe-container bash update.sh
-			clear
+#			clear
 			echo "PXE-Server update finished"
 			echo ""
 			menue
