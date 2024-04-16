@@ -27,9 +27,11 @@ menue()
 	echo "|                                                                                         |"
 	echo "|  e)     Edit 'p2-include-handle'-file                                                   |"
 	echo "|  u)     Update the PXE-Server                                                           |"
+	echo "|  n)     Restart NFS-Service                                                             |"
 	echo "|  f)     Fix permissions for samba-share                                                 |"
 	echo "|                                                                                         |"
 	echo "|  t)     Show TCPDUMP on port 67-69 of the PXE-Container                                 |"
+	echo "|  c)	    open Terminal inside PXE-Container                                              |"
 	echo "|                                                                                         |"
 	echo "|  p)     Run TAILS-Patch-Script. Tails has to be already downloaded an mounted!          |"
 	echo "|         (see https://github.com/beta-tester/RPi-PXE-Server/issues/31)                   |"
@@ -100,6 +102,15 @@ menue()
 			;;
 			#############################################
 
+		n)	clear
+			docker exec -it pxe-container bash systemctl start rpcbind && systemctl start nfs-kernel-server && rpc.mountd
+			clear
+			echo "NFS-Server restarted"
+			echo ""
+			menue
+			;;
+			#############################################
+
 		f)	clear
 			sudo chmod -R 0755 media/
 			clear
@@ -122,6 +133,14 @@ menue()
 			docker exec -it pxe-container bash tcpdump.sh
 			clear
 			echo "TCPDUMP stopped"
+			echo""
+			menue
+			;;
+			#############################################
+
+		c)	clear
+			docker exec -it pxe-container bash
+			clear
 			echo""
 			menue
 			;;
