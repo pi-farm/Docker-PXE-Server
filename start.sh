@@ -31,7 +31,7 @@ menue()
 	echo "|  f)     Fix permissions for samba-share                                                 |"
 	echo "|                                                                                         |"
 	echo "|  t)     Show TCPDUMP on port 67-69 of the PXE-Container                                 |"
-	echo "|  c)	open Terminal inside PXE-Container                                              |"
+	echo "|  c)     open Terminal inside PXE-Container                                              |"
 	echo "|                                                                                         |"
 	echo "|  p)     Run TAILS-Patch-Script. Tails has to be already downloaded an mounted!          |"
 	echo "|         (see https://github.com/beta-tester/RPi-PXE-Server/issues/31)                   |"
