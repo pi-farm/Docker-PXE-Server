@@ -31,12 +31,12 @@ menue()
 	echo "|  f)     Fix permissions for samba-share                                                 |"
 	echo "|                                                                                         |"
 	echo "|  t)     Show TCPDUMP on port 67-69 of the PXE-Container                                 |"
-	echo "|  c)	    open Terminal inside PXE-Container                                              |"
+	echo "|  c)	open Terminal inside PXE-Container                                              |"
 	echo "|                                                                                         |"
 	echo "|  p)     Run TAILS-Patch-Script. Tails has to be already downloaded an mounted!          |"
 	echo "|         (see https://github.com/beta-tester/RPi-PXE-Server/issues/31)                   |"
 	echo "|                                                                                         |"
-	echo "|  D)     DELETE the existing PXE-Container and PXE-Iimage completely                     |"
+	echo "|  D)     DELETE the existing PXE-Container and PXE-Image completely                     |"
 	echo "|                                                                                         |"
 	echo "|  EXIT   Exit this script, but PXE-Server is running, if started.                        |"
 	echo "|                                                                                         |"
@@ -103,7 +103,7 @@ menue()
 			#############################################
 
 		n)	clear
-			docker exec -it pxe-container bash systemctl start rpcbind && systemctl start nfs-kernel-server && rpc.mountd
+			docker exec -it pxe-container bash systemctl start rpcbind && sleep 5 && systemctl start nfs-kernel-server && sleep 5 && rpc.mountd
 			clear
 			echo "NFS-Server restarted"
 			echo ""
