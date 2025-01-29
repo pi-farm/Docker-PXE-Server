@@ -4,4 +4,4 @@ docker stop pxe-container
 docker rm pxe-container
 docker rmi pxe-image:latest
 
-docker build -t pxe-image:latest .
+docker build --load -t pxe-image:latest .
