@@ -1,4 +1,4 @@
-FROM ubuntu:24.10
+FROM debian:11-slim
 
 RUN apt-get update && apt-get upgrade -y && apt-get autoremove -y
 RUN apt-get install unzip fdisk util-linux nano xz-utils wget systemctl sudo git tcpdump -y
