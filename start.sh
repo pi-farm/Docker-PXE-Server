@@ -36,7 +36,7 @@ menue()
 	echo "|  p)     Run TAILS-Patch-Script. Tails has to be already downloaded an mounted!          |"
 	echo "|         (see https://github.com/beta-tester/RPi-PXE-Server/issues/31)                   |"
 	echo "|                                                                                         |"
-	echo "|  D)     DELETE the existing PXE-Container and PXE-Image completely                     |"
+	echo "|  D)     DELETE the existing PXE-Container and PXE-Image completely                      |"
 	echo "|                                                                                         |"
 	echo "|  EXIT   Exit this script, but PXE-Server is running, if started.                        |"
 	echo "|                                                                                         |"
