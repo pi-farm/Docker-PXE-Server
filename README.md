@@ -7,7 +7,7 @@ and cd into it: "cd Docker-PXE-Server"
 
 1:   run: "bash start" or "bash t-start"
 
-1.1: choose (b) to build the image and installing everythin in the container
+1.1: choose (b) to build the image and installing everything in the PXE-Container
 1.2: restart your pi
 
 #####################################################################################################
