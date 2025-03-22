@@ -16,7 +16,7 @@ tmux split-window -h -p $h2 "docker exec -it pxe-container bash tcpdump.sh"
 
 # Open-SideWindow
 tmux select-pane -t 0
-tmux split-window -h -p $h1 
+tmux split-window -h -p $h1
 
 # Select MainWindow
 tmux select-pane -t 0
@@ -72,113 +72,103 @@ menue()
 	case "$menue_wahl" in
 
 		b)
-			tmux send-keys -t 1 C-z 'bash ui/build.sh' Enter
-			tmux select-pane -t 0
-			;;
+			tmux select-pane -t 0.1
+			tmux send-keys 'clear && mkdir -p samba srv && [ -d RPi-PXE-Server/.git ] || git clone https://github.com/beta-tester/RPi-PXE-Server.git && cp scripts/* RPi-PXE-Server && docker compose build --no-cache && docker compose up -d && docker exec -it pxe-container bash first_run.sh && tmux select-pane -t 0' C-m
+			clear
+			menue;;
 
 			#############################################
 
 		id)
-			tmux select-pane -t 1
-			tmux send-keys -t 1 C-z 'bash ui/install_docker.sh' Enter
+			tmux select-pane -t 0.1
+			tmux send-keys 'clear && bash ui/install_docker.sh && tmux select-pane -t 0' C-m
 			clear
 			menue
 			;;
 
 			#############################################
+
+		ip)
+                        tmux select-pane -t 0.1
+			tmux send-keys 'clear && sudo apt-get update && sudo apt-get install -y speedometer tcpdump && tmux select-pane -t 0' C-m
+                        clear
+                        menue
+                        ;;
+
+                        #############################################
+
 
 		s)
+			tmux select-pane -t 0.1
+			tmux send-keys 'clear && docker compose start && docker exec -it pxe-container bash setup.sh && docker compose stop && sudo systemctl restart rpcbind.service && docker compose start && docker exec -it pxe-container bash update.sh && tmux select-pane -t 0' C-m
 			clear
-			docker compose start
-			docker exec -it pxe-container bash setup.sh
-			docker compose stop
-			sudo systemctl restart rpcbind.service
-			docker compose start
-			docker exec -it pxe-container bash update.sh
-			clear
-			echo "PXE-Server is running"
-			echo ""
 			menue
 			;;
 
 			#############################################
 
-		r)	clear
-			docker compose start
-			docker exec -it pxe-container bash update.sh
+		r)	tmux select-pane -t 0.1
+			tmux send-keys 'clear && docker compose start && docker exec -it pxe-container bash update.sh && tmux select-pane -t 0' C-m
 			clear
-			echo "PXE-Server started"
-			echo ""
 			menue
 			;;
 
 			#############################################
 
-		e)	clear
-			nano RPi-PXE-Server/p2-include-handle
+		e)	tmux select-pane -t 0.1
+			tmux send-keys 'clear && nano RPi-PXE-Server/p2-include-handle && tmux select-pane -t 0' C-m
 			clear
-			echo "Please update if you have changed the anything"
-			echo ""
 			menue
 			;;
 
 			#############################################
 
-		u)	clear
-			docker exec -it pxe-container bash update.sh
+		u)	tmux select-pane -t 0.1
+			tmux send-keys 'clear && docker exec -it pxe-container bash update.sh && tmux select-pane -t 0' C-m
 			clear
-			echo "PXE-Server update finished"
-			echo ""
 			menue
 			;;
 
 			#############################################
 
-		f)	clear
-			sudo chmod -R 0755 media/
+		f)	tmux select-pane -t 0.1
+			tmux send-keys 'clear && sudo chmod -R 0755 media/ && tmux select-pane -t 0' C-m
 			clear
-			echo "Permissions for Samba-Share fixed"
-			echo ""
 			menue
 			;;
 
 			#############################################
 
-		x)	clear
-			docker compose stop
+		x)	tmux select-pane -t 0.1
+			tmux send-keys 'clear && docker compose stop' C-m
+			tmux select-pane -t 0
 			clear
-			echo "PXE-Server stopped"
-			echo ""
 			menue
 			;;
 
 			#############################################
 
-		t)	clear
-			docker exec -it pxe-container bash tcpdump.sh
+#		t)	tmux select-pane -t 0.1
+#			tmux send-keys 'clear && docker exec -it pxe-container bash tcpdump.sh' C-m
+#			tmux select-pane -t 0
+#			clear
+#			menue
+#			;;
+
+			#############################################
+
+		p)	tmux select-pane -t 0.1
+			tmux send-keys 'clear && docker exec -it pxe-container bash tails-patch.sh' C-m
+			tmux select-pane -t 0
 			clear
-			echo "TCPDUMP stopped"
-			echo""
 			menue
 			;;
 
 			#############################################
 
-		p)	clear
-			docker exec -it pxe-container bash tails-patch.sh
-			clear
-			echo "Patch for Tails installed"
-			echo ""
-			menue
-			;;
-
-			#############################################
-
-		D)	clear
-			docker compose down
-			docker rmi  pxe-image:latest
-			echo "PXE-Server container and image deleted"
-			echo ""
+		D)	tmux select-pane -t 0.1
+			tmux send-keys 'clear && docker compose down && docker rmi pxe-image:latest' C-m
+			tmux select-pane -t 0
 			clear 
 			menue
 			;;
@@ -186,7 +176,6 @@ menue()
 			#############################################
 
 		EXIT)
-			#tmux send-keys -t 2 C-z 'c' Enter	
 			tmux kill-pane -t 3
 			tmux kill-pane -t 2
 			tmux kill-pane -t 1
