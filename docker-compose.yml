@@ -14,6 +14,7 @@ services:
             - ${PWD}/srv:/srv
             - ${PWD}/media:/media/
             - /boot:/boot
+            - /var/lib/nfs:/var/lib/nfs
         container_name: pxe-container
         image: pxe-image
 
