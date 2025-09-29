@@ -147,7 +147,7 @@ menue()
 			#############################################
 
 		p)	clear
-			docker exec -it pxe-container bash tails-patch.sh
+			docker exec -it pxe-container bash patch-tails.sh
 			clear
 			echo "Patch for Tails installed"
 			echo ""
