@@ -2,13 +2,15 @@
 
 # VARs
 h1=50 # tmux splitwindow percentage RIGHT WINDOW
-h2=75 # tmux splitwindow percentage RIGHT WINDOW
+h2=70 # tmux splitwindow percentage RIGHT WINDOW
 v1=30 # tmux splitwindow percentage LOWER WINDOW
 
 #### INIT-Windowset
 
 # Open Speedometer
-tmux split-window -v -p $v1 "speedometer -b -r eth0 -t eth0"
+#tmux split-window -v -p $v1 "speedometer -b -r eth0 -t eth0"
+#tmux split-window -v -p $v1 "speedometer -r eth0 -t eth0 -l -m 26214400"
+tmux split-window -v -p $v1 "nload -z -i 10240 -o 10240 -u M eth0"
 
 # Open TCPDUMP
 tmux select-pane -t 1
