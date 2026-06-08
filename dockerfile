@@ -4,6 +4,7 @@ ADD https://github.com/just-containers/s6-overlay/releases/download/v3.1.6.0/s6-
 ADD https://github.com/just-containers/s6-overlay/releases/download/v3.1.6.0/s6-overlay-aarch64.tar.xz /tmp
 RUN tar -C / -Jxpf /tmp/s6-overlay-aarch64.tar.xz && tar -C / -Jxpf /tmp/s6-overlay-noarch.tar.xz && mkdir /app && mkdir /app/RPi-PXE-Server
 COPY root/ /
+RUN chmod +x /usr/local/bin/systemctl && ln -sf /usr/local/bin/systemctl /usr/bin/systemctl
 VOLUME /app/RPi-PXE-Server
 VOLUME /srv
 VOLUME /etc/samba
