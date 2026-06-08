@@ -2,7 +2,9 @@
 
 echo "Starte PXE-relevante Dienste via systemctl-shim..."
 
-# Hier alle Dienste auflisten, die der PXE-Server braucht
+# Fix für rpcbind: Fehlendes Verzeichnis erstellen
+mkdir -p /run/sendsigs.omit.d
+
 systemctl start rpcbind
 systemctl start nfs-kernel-server
 systemctl start dnsmasq
