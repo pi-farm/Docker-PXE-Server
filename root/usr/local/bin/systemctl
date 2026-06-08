@@ -1,0 +1,32 @@
+#!/bin/bash
+# Gefälschtes systemctl für den Container
+
+ACTION=$1
+SERVICE=$2
+
+# .service Endung entfernen, falls vorhanden
+SERVICE=${SERVICE%.service}
+
+# CRITICAL FIX: samba-ad-dc komplett ignorieren, um den RPC-Konflikt zu verhindern!
+if [[ "$SERVICE" == "samba-ad-dc" ]]; then
+    echo "Shim: Blocked samba-ad-dc to prevent RPC collision."
+    exit 0
+fi
+
+case "$ACTION" in
+    start|stop|restart|status)
+        if [ -x "/etc/init.d/$SERVICE" ]; then
+            /etc/init.d/$SERVICE "$ACTION"
+        else
+            service "$SERVICE" "$ACTION" 2>/dev/null || echo "Shim: Service $SERVICE not found"
+        fi
+        ;;
+    enable|disable|daemon-reload|unmask|mask)
+        # Diese Befehle sind im Container irrelevant, wir melden einfach Erfolg
+        exit 0
+        ;;
+    *)
+        echo "Shim: Unknown command $ACTION for $SERVICE - ignoring."
+        exit 0
+        ;;
+esac
